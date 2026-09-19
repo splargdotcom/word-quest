@@ -1,5 +1,18 @@
 # Word Quest — updated source
 
+<!-- splarg-storefront:start -->
+<p align="center">
+  <a href="https://splarg.itch.io/word-quest"><img src="wqlogo.png" alt="word-quest" width="720"></a>
+</p>
+
+<p align="center">
+  <strong><a href="https://splarg.itch.io/word-quest">▶ Play in browser on itch.io</a></strong>
+</p>
+<p align="center">
+  <a href="https://splarg.itch.io/word-quest">Screenshots & current public release</a> · <a href="https://splarg.com/">splarg.com</a>
+</p>
+<!-- splarg-storefront:end -->
+
 A reliability and usability update to the supplied game. The original logo, pixel dungeon, four biomes, boss abilities, difficulty levels, VOID mechanic and endless descent remain.
 
 ## Play
