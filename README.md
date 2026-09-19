@@ -1,9 +1,6 @@
-# Word Quest — updated source
+# WORD QUEST
 
 <!-- splarg-storefront:start -->
-<p align="center">
-  <a href="https://splarg.itch.io/word-quest"><img src="wqlogo.png" alt="word-quest" width="720"></a>
-</p>
 
 <p align="center">
   <strong><a href="https://splarg.itch.io/word-quest">▶ Play in browser on itch.io</a></strong>
@@ -15,11 +12,11 @@
 
 <!-- splarg-itch-media:start -->
 <p align="center">
-  <a href="https://splarg.itch.io/word-quest"><img src="docs/itch/cover.png" alt="Word Quest — updated source cover art" width="640"></a>
+  <a href="https://splarg.itch.io/word-quest"><img src="docs/itch/cover.png" alt="WORD QUEST cover art" width="640"></a>
 </p>
 <p align="center">
-  <img src="docs/itch/screenshot-1.png" alt="Word Quest — updated source screenshot" width="31%">
-  <img src="docs/itch/screenshot-2.png" alt="Word Quest — updated source screenshot" width="31%">
+  <img src="docs/itch/screenshot-1.png" alt="WORD QUEST screenshot" width="47%">
+  <img src="docs/itch/screenshot-2.png" alt="WORD QUEST screenshot" width="47%">
 </p>
 <!-- splarg-itch-media:end -->
 
