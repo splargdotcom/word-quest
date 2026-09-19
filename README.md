@@ -62,3 +62,9 @@ The original game used [dwyl/english-words](https://github.com/dwyl/english-word
 Source SHA-256: `3ed0c94610d8bcf7c11bbb49c56aa49c7234d32b66824df91f554169e572da48`.
 
 This preserves the existing broad dictionary, including obscure words. A smaller curated word list would be a separate gameplay decision.
+
+## License
+
+The Word Quest source code in this repository is released under the MIT License. See [LICENSE](LICENSE).
+
+The bundled dictionary is third-party material and remains covered separately by [DICTIONARY-LICENSE.txt](DICTIONARY-LICENSE.txt).
