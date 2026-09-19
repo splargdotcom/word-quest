@@ -1,0 +1,9 @@
+{
+  "name": "wordquest",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Word Quest reliability and usability update; static browser game",
+  "scripts": { "test": "node tests/regression.mjs" },
+  "engines": { "node": ">=20" },
+  "devDependencies": { "happy-dom": "20.14.5" }
+}
