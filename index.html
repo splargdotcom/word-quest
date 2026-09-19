@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#140c1c">
+    <meta name="description" content="A word-building dungeon crawler. Spell to fight. Spell to heal. Descend into the void.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'">
+    <title>Word Quest</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="dictionary.js"></script>
+    <script defer src="engine.js"></script>
+    <script defer src="game.js"></script>
+</head>
+<body>
+<main id="game-wrapper">
+    <div id="play-surface" tabindex="-1">
+        <section id="view-panel" aria-label="Dungeon and combat">
+            <div class="topbar">
+                <button id="pause-btn" class="small-btn" aria-label="Pause game">⏸ PAUSE</button>
+                <span class="wordmark">WORD QUEST</span>
+                <button id="mute-btn" class="small-btn" aria-label="Toggle sound" aria-pressed="false">🔊 SOUND ON</button>
+            </div>
+            <div class="biome-heading">
+                <h1 id="biome-name">The Whispering Mines</h1>
+                <p id="ui-rule">Any word, two letters or more.</p>
+            </div>
+            <div class="dungeon-scene">
+                <canvas id="gameCanvas" aria-label="Your adventurer explores the dungeon. Combat details appear below."></canvas>
+                <div id="vignette"></div>
+            </div>
+            <div id="combat-status">
+                <div class="enemy-line"><strong id="enemy-name">EXPLORING</strong><span id="enemy-health"></span></div>
+                <div class="attack-track" aria-hidden="true"><div id="attack-fill"></div></div>
+                <p id="enemy-intent">Prepare a word as you walk.</p>
+                <p id="boss-rule"></p>
+                <p id="curse-status" role="status" aria-live="off"></p>
+            </div>
+            <div id="hud">
+                <div class="stat-box hp-stat"><span class="stat-label">HEALTH</span><span class="stat-val" id="ui-hp">500 / 500</span><div class="health-track" aria-hidden="true"><div id="health-fill"></div></div></div>
+                <div class="stat-box"><span class="stat-label">LEVEL</span><span class="stat-val" id="ui-level">1</span></div>
+                <div class="stat-box"><span class="stat-label">DEPTH</span><span class="stat-val" id="ui-depth">0m</span></div>
+                <div class="stat-box"><span class="stat-label">SCORE</span><span class="stat-val" id="ui-score">0</span></div>
+            </div>
+        </section>
+        <section id="board-area" aria-label="Word board">
+            <div class="word-area"><div id="current-word-display" aria-live="polite">MAKE A WORD</div><p id="action-detail"></p></div>
+            <button id="action-btn" disabled>SELECT LETTERS ANYWHERE</button>
+            <div id="tile-grid" role="group" aria-label="Letter tiles. Choose letters in any order; they do not need to touch."></div>
+            <div class="board-tools">
+                <button id="undo-btn" class="small-btn" title="Undo last letter (Backspace)" disabled>↶ UNDO</button>
+                <button id="clear-btn" class="small-btn" title="Clear word (Delete)" disabled>CLEAR</button>
+                <button id="sacrifice-btn" class="small-btn danger" title="Replace every tile for 10% of maximum health">SACRIFICE −50 HP</button>
+            </div>
+            <p class="tile-legend"><span class="heal-key">+ Healing</span><span class="wild-key">? Wildcard</span><span class="rot-key">−5 Corruption</span></p>
+            <p class="keyboard-tip">Type letters · Enter to cast · Backspace to undo · Esc to pause</p>
+        </section>
+    </div>
+
+    <section id="menu-start" class="overlay" role="dialog" aria-modal="true" aria-label="Word Quest main menu">
+        <div class="menu-content title-card">
+            <img src="wqlogo.png" alt="Word Quest" class="menu-logo" width="350" height="350">
+            <p class="tagline">EVERY WORD BUYS YOU ANOTHER BREATH.</p>
+            <div class="record-line">DEEPEST DESCENT <strong id="menu-high-score">—</strong></div>
+            <div class="diff-row" role="group" aria-label="Difficulty">
+                <button class="diff-btn" onclick="App.setDifficulty('easy')" id="btn-easy" aria-pressed="false">EASY</button>
+                <button class="diff-btn selected" onclick="App.setDifficulty('normal')" id="btn-normal" aria-pressed="true">NORMAL</button>
+                <button class="diff-btn" onclick="App.setDifficulty('hard')" id="btn-hard" aria-pressed="false">HARD</button>
+            </div>
+            <p id="difficulty-detail" class="muted"></p><p id="difficulty-best" class="small-copy"></p>
+            <button id="continue-btn" class="menu-btn hidden" onclick="App.continueRun()">CONTINUE</button>
+            <button id="start-btn" class="menu-btn" onclick="App.startGame()" disabled>LOADING DICTIONARY…</button>
+            <button class="menu-btn secondary" onclick="App.showHelp()">HOW TO PLAY</button>
+            <p id="save-note" class="small-copy"></p>
+            <p id="dictionary-status" class="small-copy">Loading the included dictionary…</p>
+        </div>
+    </section>
+
+    <section id="menu-pause" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+        <div class="menu-content">
+            <p class="eyebrow">A MOMENT OF SILENCE</p><h2 id="pause-title">PAUSED</h2>
+            <p id="pause-note" class="muted">Take your time.</p>
+            <button class="menu-btn" onclick="App.togglePause()">RESUME</button>
+            <button class="menu-btn secondary" onclick="App.saveAndQuit()">SAVE &amp; TITLE</button>
+            <button class="menu-btn secondary" onclick="App.showHelp()">HOW TO PLAY</button>
+            <button class="text-btn" onclick="App.surrender()">Surrender this run</button>
+        </div>
+    </section>
+
+    <section id="menu-help" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="help-title">
+        <div class="menu-content help-card">
+            <p class="eyebrow">WORDS ARE YOUR WEAPONS</p><h2 id="help-title">HOW TO PLAY</h2>
+            <div class="help-copy">
+                <p><strong>Build a word.</strong> Tap any letters in order. They do not need to touch. Two letters is enough; five or more earns a power bonus.</p>
+                <p><strong>Cast to attack.</strong> Prepare words while walking and cast when an enemy arrives. The gold bar shows its next attack. Stop choosing letters for four seconds and it attacks faster.</p>
+                <p><strong class="heal-key">Green + tiles heal.</strong> Include one in a word to heal instead of attacking. Healing is capped at 15% of maximum HP and is less efficient near full health.</p>
+                <p><strong class="wild-key">Pink ? tiles are wild.</strong> They resolve to the first matching dictionary word. Type a letter to assign a spare wildcard when that letter is unavailable.</p>
+                <p><strong class="rot-key">Red −5 tiles hurt.</strong> Each costs 5 HP when used. Boss curses can add other costs; read the preview before casting.</p>
+                <p><strong>Sacrifice rewrites the entire board.</strong> It costs 10% of maximum HP and clears corrupted tiles. Active boss curses still apply.</p>
+                <p><strong>Descend through four biomes.</strong> Bosses and biomes change the rules. Clear a biome to recover your health. Beyond the final guardian, ascend or continue endlessly.</p>
+                <p><strong>Keyboard:</strong> A–Z chooses letters; Enter casts; Backspace undoes; Delete clears; Esc pauses. You can also Tab to the board, move with arrow keys, and select with Space or Enter.</p>
+                <p class="muted">Your run saves on this device. Switching tabs pauses the game, including boss fights. Sound and difficulty preferences are remembered.</p>
+            </div>
+            <button class="menu-btn" onclick="App.closeHelp()">BACK</button>
+        </div>
+    </section>
+
+    <section id="menu-levelup" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="levelup-title">
+        <div class="menu-content">
+            <p class="eyebrow">A LITTLE DEEPER</p><h2 id="levelup-title" class="heal-key">BIOME CLEARED</h2>
+            <p id="lvl-heal-desc" class="muted"></p>
+            <p class="rule-caption">NEXT RULE</p><p id="lvl-rule-desc" class="rule-highlight"></p>
+            <button class="menu-btn" onclick="App.nextLevel()">DESCEND</button>
+            <p class="small-copy">Progress saved at this crossing.</p>
+        </div>
+    </section>
+
+    <section id="menu-crossroads" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="crossroads-title">
+        <div class="menu-content">
+            <p class="eyebrow">THE GUARDIAN FALLS</p><h2 id="crossroads-title">THE END?</h2>
+            <p class="muted">Silence reclaims the void.</p>
+            <button class="menu-btn" onclick="App.chooseAscend()">ASCEND</button>
+            <p class="small-copy">Meaning dissolves. The run ends.</p>
+            <button class="menu-btn secondary" onclick="App.chooseDescend()">DESCEND</button>
+            <p class="small-copy">The dungeon continues. Nothing changes.</p>
+        </div>
+    </section>
+
+    <section id="menu-gameover" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="summary-title">
+        <div class="menu-content">
+            <p class="eyebrow">YOUR DESCENT</p><h2 id="summary-title">HERE LIES A WORD.</h2>
+            <p id="summary-reason" class="muted"></p>
+            <dl class="run-stats">
+                <div><dt>DEPTH</dt><dd id="go-depth">0m</dd></div><div><dt>SCORE</dt><dd id="go-score">0</dd></div>
+                <div><dt>WORDS CAST</dt><dd id="go-words">0</dd></div><div><dt>FOES DEFEATED</dt><dd id="go-kills">0</dd></div>
+                <div class="wide"><dt>STRONGEST WORD</dt><dd id="go-best">—</dd></div>
+                <div class="wide"><dt>LONGEST WORD</dt><dd id="go-longest">—</dd></div>
+            </dl>
+            <button class="menu-btn" onclick="App.startGame()">TRY AGAIN</button>
+            <button class="menu-btn secondary" onclick="App.returnToTitle()">TITLE SCREEN</button>
+        </div>
+    </section>
+</main>
+<div id="live-message" class="sr-only" role="status" aria-live="polite"></div>
+<noscript>This game needs JavaScript enabled in your browser.</noscript>
+</body>
+</html>
