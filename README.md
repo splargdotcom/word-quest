@@ -13,6 +13,17 @@
 </p>
 <!-- splarg-storefront:end -->
 
+<!-- splarg-itch-media:start -->
+<p align="center">
+  <a href="https://splarg.itch.io/word-quest"><img src="docs/itch/cover.png" alt="Word Quest — updated source cover art" width="640"></a>
+</p>
+<p align="center">
+  <img src="docs/itch/screenshot-1.png" alt="Word Quest — updated source screenshot" width="31%">
+  <img src="docs/itch/screenshot-2.png" alt="Word Quest — updated source screenshot" width="31%">
+</p>
+<!-- splarg-itch-media:end -->
+
+
 A reliability and usability update to the supplied game. The original logo, pixel dungeon, four biomes, boss abilities, difficulty levels, VOID mechanic and endless descent remain.
 
 ## Play
